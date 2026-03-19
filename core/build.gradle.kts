@@ -149,7 +149,6 @@ dependencies {
     api("com.google.android.play:app-update-ktx:2.1.0")
     api("com.google.android.play:app-update:2.1.0")
 
-
     // Gson
     api("com.google.code.gson:gson:2.13.1")
 
@@ -182,11 +181,6 @@ dependencies {
     releaseApi("com.androidpluto:pluto-no-op:$plutoVersion")
     debugApi("com.androidpluto.plugins:bundle-core:$plutoVersion")
     releaseApi("com.androidpluto.plugins:bundle-core-no-op:$plutoVersion")
-
-
-    // Lingver
-    api("com.github.YarikSOffice:lingver:1.3.0")
-
 
     // Leakcanary
     debugApi("com.squareup.leakcanary:leakcanary-android:2.14")
