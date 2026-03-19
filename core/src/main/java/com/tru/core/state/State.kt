@@ -1,0 +1,17 @@
+package com.tru.core.state
+
+import com.tru.core.error.AppError
+
+
+sealed interface State<out T> {
+
+    data object Loading : State<Nothing>
+
+    data class Success<T>(
+        val data: T
+    ) : State<T>
+
+    data class Error(
+        val error: AppError
+    ) : State<Nothing>
+}
