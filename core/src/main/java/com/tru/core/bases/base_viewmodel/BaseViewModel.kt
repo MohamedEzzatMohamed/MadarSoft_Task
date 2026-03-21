@@ -4,50 +4,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tru.core.error.AppError
 import com.tru.core.error.AppErrorHandler
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-abstract class BaseViewModel<Intent : ViewIntent, State : ViewState, Event : UiEvent>(
-    initialState: State
-) : ViewModel(), AppErrorHandler {
+abstract class BaseViewModel<Intent : ViewIntent, State : ViewState>(initialState: State) :
+    ViewModel(), AppErrorHandler {
 
-    // SINGLE source of truth
-    protected val _uiState = MutableStateFlow(initialState)
-    val uiState = _uiState.asStateFlow()
 
-    // UI events (navigation, snackbar, dialog...)
-    protected val _uiEvent = MutableSharedFlow<Event>()
-    val uiEvent = _uiEvent.asSharedFlow()
+    private val _uiStateFlow = MutableStateFlow(initialState)
+    val uiStateFlow = _uiStateFlow.asStateFlow()
 
-    // Intents stream
-    private val intents = MutableSharedFlow<Intent>(extraBufferCapacity = 1)
+
+    private val channel = Channel<Intent>(Channel.UNLIMITED)
 
     init {
-        observeIntents()
+        processIntent()
     }
 
-    private fun observeIntents() {
-        viewModelScope.launch {
-            intents.collect { intent ->
-                handleIntent(intent)
-            }
-        }
+    private fun processIntent() = viewModelScope.launch {
+        channel.consumeAsFlow().collect { intent -> processIntent(intent) }
     }
 
-    protected abstract suspend fun handleIntent(intent: Intent)
+    abstract fun processIntent(intent: Intent)
 
-    fun sendIntent(intent: Intent) {
-        intents.tryEmit(intent)
-    }
 
-    protected fun updateState(reducer: State.() -> State) {
-        _uiState.update(reducer)
-    }
+    protected fun updateStateFlow(reducer: State.() -> State) =
+        _uiStateFlow.update(reducer)
+
+
+    fun sendIntent(intent: Intent) = viewModelScope.launch { channel.send(intent) }
+
 
     override fun handleError(error: AppError, callback: AppError.() -> Unit) {
         error.logError()
@@ -58,4 +51,3 @@ abstract class BaseViewModel<Intent : ViewIntent, State : ViewState, Event : UiE
 interface ViewState
 
 interface ViewIntent
-interface UiEvent

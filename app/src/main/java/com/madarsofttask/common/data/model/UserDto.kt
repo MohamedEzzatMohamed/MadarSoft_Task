@@ -11,7 +11,7 @@ data class UserDto(
     @ColumnInfo("user_name")
     val userName: String? = null,
     @ColumnInfo("age")
-    val age: Int? = null,
+    val age: String? = null,
     @ColumnInfo("job_title")
     val jobTitle: String? = null,
     @ColumnInfo("gender_type")

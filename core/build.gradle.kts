@@ -73,6 +73,7 @@ dependencies {
     api("androidx.core:core-ktx:1.16.0")
     api("androidx.appcompat:appcompat:1.7.1")
     api("com.google.android.material:material:1.12.0")
+    implementation("androidx.paging:paging-compose:3.4.2")
     testApi("junit:junit:4.13.2")
     androidTestApi("androidx.test.ext:junit:1.2.1")
     androidTestApi("androidx.test.espresso:espresso-core:3.6.1")

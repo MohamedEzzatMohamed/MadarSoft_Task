@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">MadarSoftTask</string>
+
+    <string name="pleaseEnterUserInfo">Please enter user info to add new user.</string>
+    <string name="addNewUser">Add new user</string>
+    <string name="nameRequired">Name*</string>
+    <string name="name">Name:</string>
+    <string name="enterName">Enter name</string>
+    <string name="ageRequired">Age*</string>
+    <string name="age">Age:</string>
+    <string name="enterAge">Enter age</string>
+    <string name="jobTitleRequired">Job title*</string>
+    <string name="jobTitle">Job Title:</string>
+    <string name="enterJobTitle">Enter job title</string>
+    <string name="gender">Gender:</string>
+    <string name="selectGender">Select gender</string>
+    <string name="users">Users</string>
+    <string name="noYears">%s years</string>
+    <string name="showAllUsers">Show all users</string>
+    <string name="stringPlaceholder">%s</string>
+    <string name="there_is_no_user_here">There is no users here.</string>
+    <string name="failed_to_load_content">Failed to load content</string>
+    <string name="refresh">Tap to refresh</string>
 </resources>
