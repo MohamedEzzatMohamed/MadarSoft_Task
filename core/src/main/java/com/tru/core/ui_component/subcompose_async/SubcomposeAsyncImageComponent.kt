@@ -1,4 +1,4 @@
-package com.core.ui_component.subcompose_async
+package com.tru.core.ui_component.subcompose_async
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

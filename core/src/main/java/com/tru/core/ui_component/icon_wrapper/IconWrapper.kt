@@ -1,4 +1,4 @@
-package com.core.ui_component.icon_wrapper
+package com.tru.core.ui_component.icon_wrapper
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.core.ui_component.custom_surface
+package com.tru.core.ui_component.custom_surface
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

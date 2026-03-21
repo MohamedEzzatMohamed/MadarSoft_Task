@@ -32,8 +32,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.core.ui_component.custom_text_failed.ui_text.UiText
-import com.core.ui_component.validation_method.isNumber
+import com.tru.core.ui_component.custom_text_failed.ui_text.UiText
+import com.tru.core.ui_component.validation_method.isNumber
 
 
 @Composable

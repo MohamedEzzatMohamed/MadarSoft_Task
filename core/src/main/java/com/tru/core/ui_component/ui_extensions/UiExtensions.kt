@@ -1,4 +1,4 @@
-package com.core.ui_component.ui_extensions
+package com.tru.core.ui_component.ui_extensions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

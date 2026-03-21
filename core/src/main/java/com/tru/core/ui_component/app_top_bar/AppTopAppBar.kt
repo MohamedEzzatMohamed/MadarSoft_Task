@@ -1,4 +1,4 @@
-package com.core.ui_component.app_top_bar
+package com.tru.core.ui_component.app_top_bar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api

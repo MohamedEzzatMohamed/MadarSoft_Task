@@ -1,4 +1,4 @@
-package com.core.ui_component.dialog_component
+package com.tru.core.ui_component.dialog_component
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialogDefaults

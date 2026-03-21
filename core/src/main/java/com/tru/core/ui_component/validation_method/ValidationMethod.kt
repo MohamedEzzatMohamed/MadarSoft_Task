@@ -1,4 +1,4 @@
-package com.core.ui_component.validation_method
+package com.tru.core.ui_component.validation_method
 
 import android.util.Patterns
 

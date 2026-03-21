@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tru.core.ui_component.failure_view.FailureView
-import com.core.ui_component.main_top_bar.MainTopBar
-import com.core.ui_component.ui_generic.GeneralLazyColumn
+import com.tru.core.ui_component.main_top_bar.MainTopBar
+import com.tru.core.ui_component.ui_generic.GeneralLazyColumn
 import com.madarsofttask.R
 import com.madarsofttask.common.domain.entitty.UserEntity
 import com.madarsofttask.feature.all_users_list_screen.presentation.composables.UserItem

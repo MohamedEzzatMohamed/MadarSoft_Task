@@ -1,4 +1,4 @@
-package com.core.ui_component.custom_text_failed.ui_text
+package com.tru.core.ui_component.custom_text_failed.ui_text
 
 import android.content.Context
 import androidx.annotation.StringRes

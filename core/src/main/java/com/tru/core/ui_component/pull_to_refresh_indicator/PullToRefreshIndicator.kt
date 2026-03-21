@@ -1,4 +1,4 @@
-package com.core.ui_component.pull_to_refresh_indicator
+package com.tru.core.ui_component.pull_to_refresh_indicator
 
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.ExperimentalMaterial3Api

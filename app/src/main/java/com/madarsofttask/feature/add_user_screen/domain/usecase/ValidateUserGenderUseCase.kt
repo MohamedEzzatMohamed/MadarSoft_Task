@@ -1,6 +1,6 @@
 package com.madarsofttask.feature.add_user_screen.domain.usecase
 
-import com.core.ui_component.custom_text_failed.ui_text.UiText
+import com.tru.core.ui_component.custom_text_failed.ui_text.UiText
 import com.madarsofttask.R
 import com.madarsofttask.feature.add_user_screen.domain.event.state.AddUserState
 import com.madarsofttask.feature.add_user_screen.domain.model.ValidationResult

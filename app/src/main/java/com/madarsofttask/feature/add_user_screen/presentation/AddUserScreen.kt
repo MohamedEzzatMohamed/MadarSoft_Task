@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.core.ui_component.custom_text_failed.ui_text.UiText
-import com.core.ui_component.main_top_bar.MainTopBar
+import com.tru.core.ui_component.custom_text_failed.ui_text.UiText
+import com.tru.core.ui_component.main_top_bar.MainTopBar
 import com.madarsofttask.R
 import com.madarsofttask.feature.add_user_screen.domain.event.state.AddUserState
 import com.madarsofttask.feature.add_user_screen.domain.model.Gender

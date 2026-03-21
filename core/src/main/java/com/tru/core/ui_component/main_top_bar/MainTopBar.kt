@@ -1,4 +1,4 @@
-package com.core.ui_component.main_top_bar
+package com.tru.core.ui_component.main_top_bar
 
 
 import androidx.annotation.DrawableRes
@@ -28,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.core.ui_component.pull_to_refresh_indicator.PullToRefreshIndicator
-import com.core.ui_component.app_top_bar.AppTopAppBar
-import com.core.ui_component.icon_wrapper.IconWrapper
+import com.tru.core.ui_component.pull_to_refresh_indicator.PullToRefreshIndicator
+import com.tru.core.ui_component.app_top_bar.AppTopAppBar
+import com.tru.core.ui_component.icon_wrapper.IconWrapper
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
