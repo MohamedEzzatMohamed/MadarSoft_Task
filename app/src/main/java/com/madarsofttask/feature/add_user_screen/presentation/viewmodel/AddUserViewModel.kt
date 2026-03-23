@@ -1,6 +1,7 @@
 package com.madarsofttask.feature.add_user_screen.presentation.viewmodel
 
 import com.madarsofttask.common.domain.entitty.UserEntity
+import com.madarsofttask.feature.add_user_screen.domain.event.AddUserEvent
 import com.madarsofttask.feature.add_user_screen.domain.event.AddUserIntent
 import com.madarsofttask.feature.add_user_screen.domain.event.state.AddUserState
 import com.madarsofttask.feature.add_user_screen.domain.repository.AddUserRepository
@@ -22,129 +23,97 @@ class AddUserViewModel @Inject constructor(
     private val validateUserGenderUseCase: ValidateUserGenderUseCase,
     private val validateUserJobTitleUseCase: ValidateUserJobTitleUseCase,
     private val addUserRepository: AddUserRepository
-) : BaseViewModel<AddUserIntent, AddUserState>(initialState = AddUserState()) {
+) : BaseViewModel<AddUserIntent, AddUserState, AddUserEvent>(initialState = AddUserState()) {
 
+    fun onNameChange(name: String) = sendIntent(AddUserIntent.UserNameValidationIntent(name))
+    fun onAgeChange(age: String) = sendIntent(AddUserIntent.UserAgeValidationIntent(age))
+    fun onGenderChange(gender: String) =
+        sendIntent(AddUserIntent.UserGenderValidationIntent(gender))
 
-    fun sendValidateUserNameIntent(name: String) =
-        sendIntent(AddUserIntent.UserNameValidationIntent(userName = name))
+    fun onJobTitleChange(jobTitle: String) =
+        sendIntent(AddUserIntent.UserJobTitleValidationIntent(jobTitle))
 
-    fun sendValidateUserAgeIntent(age: String) =
-        sendIntent(AddUserIntent.UserAgeValidationIntent(age = age))
+    fun onAddNewUserClick() = sendIntent(AddUserIntent.AddNewUserIntent(userEntity))
 
-    fun sendValidateUserGenderIntent(gender: String) =
-        sendIntent(AddUserIntent.UserGenderValidationIntent(gender = gender))
-
-    fun sendValidateUserJobTitleIntent(jobTitle: String) =
-        sendIntent(AddUserIntent.UserJobTitleValidationIntent(jobTitle = jobTitle))
-
-
-    fun sendAddUserIntent() =
-        sendIntent(AddUserIntent.AddUserIntent(userEntity = userEntity))
-
-    private val userEntity
+    private val userEntity: UserEntity
         get() = UserEntity(
-            name = uiStateFlow.value.name,
-            age = uiStateFlow.value.age,
-            jobTitle = uiStateFlow.value.jobTitle,
-            genderType = uiStateFlow.value.gender
+            name = uiState.value.name,
+            age = uiState.value.age,
+            jobTitle = uiState.value.jobTitle,
+            genderType = uiState.value.gender
         )
 
-
-    override fun processIntent(intent: AddUserIntent) {
+    override suspend fun handleIntent(intent: AddUserIntent) {
         when (intent) {
             is AddUserIntent.UserNameValidationIntent -> {
-                reduceNameValidationState(name = intent.userName)
-                isNameValid()
+                updateState { copy(name = intent.userName) }
+                validateName()
             }
 
             is AddUserIntent.UserAgeValidationIntent -> {
-                reduceAgeValidationState(age = intent.age)
-                isAgeValid()
+                updateState { copy(age = intent.age) }
+                validateAge()
             }
 
             is AddUserIntent.UserGenderValidationIntent -> {
-                reduceGenderTypeValidationState(gender = intent.gender)
-                isGenderTypeValid()
+                updateState { copy(gender = intent.gender) }
+                validateGender()
             }
 
             is AddUserIntent.UserJobTitleValidationIntent -> {
-                reduceJobTitleValidationState(jobTitle = intent.jobTitle)
-                isJobTitleValid()
+                updateState { copy(jobTitle = intent.jobTitle) }
+                validateJobTitle()
             }
 
-            is AddUserIntent.AddUserIntent -> {
-                reduceAddUserState(userEntity = intent.userEntity)
+            is AddUserIntent.AddNewUserIntent -> {
+                executeAddUser(intent.userEntity)
             }
         }
     }
 
-
-    private fun reduceNameValidationState(name: String) = updateStateFlow { copy(name = name) }
-
-    private fun isNameValid(): Boolean {
-        val validationState = AddUserState(name = uiStateFlow.value.name)
-        val result = validateUserNameUseCase.execute(input = validationState)
-        updateStateFlow { copy(errorName = result.errorText) }
-        return result.isSuccessful
+    // --- Validation Logic ---
+    private fun validateName() {
+        val result = validateUserNameUseCase.execute(uiState.value)
+        updateState { copy(errorName = result.errorText) }
     }
 
-
-    private fun reduceAgeValidationState(age: String) = updateStateFlow { copy(age = age) }
-
-    private fun isAgeValid(): Boolean {
-        val validationState = AddUserState(age = uiStateFlow.value.age)
-        val result = validateUserAgeUseCase.execute(input = validationState)
-        updateStateFlow { copy(errorAge = result.errorText) }
-        return result.isSuccessful
+    private fun validateAge() {
+        val result = validateUserAgeUseCase.execute(uiState.value)
+        updateState { copy(errorAge = result.errorText) }
     }
 
-
-    private fun reduceGenderTypeValidationState(gender: String) =
-        updateStateFlow { copy(gender = gender) }
-
-    private fun isGenderTypeValid(): Boolean {
-        val validationState = AddUserState(gender = uiStateFlow.value.gender)
-        val result = validateUserGenderUseCase.execute(input = validationState)
-        updateStateFlow { copy(errorGender = result.errorText) }
-        return result.isSuccessful
+    private fun validateGender() {
+        val result = validateUserGenderUseCase.execute(uiState.value)
+        updateState { copy(errorGender = result.errorText) }
     }
 
-    private fun reduceJobTitleValidationState(jobTitle: String) =
-        updateStateFlow { copy(jobTitle = jobTitle) }
-
-    private fun isJobTitleValid(): Boolean {
-        val validationState = AddUserState(jobTitle = uiStateFlow.value.jobTitle)
-        val result = validateUserJobTitleUseCase.execute(input = validationState)
-        updateStateFlow { copy(errorJobTitle = result.errorText) }
-        return result.isSuccessful
+    private fun validateJobTitle() {
+        val result = validateUserJobTitleUseCase.execute(uiState.value)
+        updateState { copy(errorJobTitle = result.errorText) }
     }
 
+    // --- Repository Interaction ---
+    private suspend fun executeAddUser(userEntity: UserEntity) {
+        // نستخدم الـ Dispatcher من خلال الـ scope الخارجي أو نحدده هنا إذا لزم الأمر
+        // الـ handleIntent تُنفذ أصلاً في viewModelScope
+        updateState { copy(isLoading = true) }
 
-    private fun reduceAddUserState(userEntity: UserEntity) = viewModelScope(
-        context = Dispatchers.IO
-    ) {
-        updateStateFlow { copy(isLoading = true) }
         try {
             addUserRepository.addUser(user = userEntity.toUserDto())
-            updateStateFlow { copy(isLoading = false, isAddedSuccess = true) }
+            updateState { copy(isLoading = false, isAddedSuccess = true) }
+
+            // إرسال Event للرجوع للخلف أو إظهار رسالة
+            _uiEvent.emit(AddUserEvent.NavigateToList)
+
         } catch (e: Exception) {
             val appError = AppError.E(exception = e, message = e.message ?: "Unknown error")
             handleError(error = appError) {
-                updateStateFlow { copy(isLoading = false, appError = appError) }
+                updateState { copy(isLoading = false, appError = appError) }
             }
         }
     }
 
-
-    fun resetAddUserState() = updateStateFlow {
-        copy(
-            name = "",
-            age = "",
-            jobTitle = "",
-            gender = "",
-            isLoading = false,
-            appError = null,
-            isAddedSuccess = false
-        )
+    fun resetState() {
+        updateState { AddUserState() }
     }
 }

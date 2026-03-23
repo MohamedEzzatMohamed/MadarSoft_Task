@@ -44,7 +44,7 @@ fun AddUserScreen(
     onNavigateToAllUsers: () -> Unit,
 ) {
 
-    val uiState = viewModel.uiStateFlow.collectAsStateWithLifecycle().value
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     MainTopBar(
         title = R.string.addNewUser,
@@ -55,11 +55,11 @@ fun AddUserScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     AddUserContent(
                         state = uiState,
-                        onValidateUserNameIntent = viewModel::sendValidateUserNameIntent,
-                        onValidateUserAgeIntent = viewModel::sendValidateUserAgeIntent,
-                        onValidateUserGenderIntent = viewModel::sendValidateUserGenderIntent,
-                        onValidateUserJobTitleIntent = viewModel::sendValidateUserJobTitleIntent,
-                        onAddUserBtnClicked = { viewModel.sendAddUserIntent() })
+                        onValidateUserNameIntent = viewModel::onNameChange,
+                        onValidateUserAgeIntent = viewModel::onAgeChange,
+                        onValidateUserGenderIntent = viewModel::onGenderChange,
+                        onValidateUserJobTitleIntent = viewModel::onJobTitleChange,
+                        onAddUserBtnClicked = { viewModel.onAddNewUserClick() })
                 }
 
                 NextButton(
@@ -82,7 +82,7 @@ fun AddUserScreen(
     LaunchedEffect(key1 = uiState) {
         if (uiState.isAddedSuccess) {
             onNavigateToAllUsers()
-            viewModel.resetAddUserState()
+            viewModel.resetState()
         }
     }
 

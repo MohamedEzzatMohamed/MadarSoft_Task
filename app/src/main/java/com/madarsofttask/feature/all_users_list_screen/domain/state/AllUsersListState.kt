@@ -1,4 +1,4 @@
-package com.madarsofttask.feature.all_users_list_screen.domain.model.state
+package com.madarsofttask.feature.all_users_list_screen.domain.state
 
 import com.madarsofttask.common.domain.entitty.UserEntity
 import com.tru.core.bases.base_viewmodel.ViewState

@@ -21,7 +21,7 @@ fun AllUsersListScreen(
     onBackClicked: () -> Unit
 ) {
 
-    val uiState = viewModel.uiStateFlow.collectAsStateWithLifecycle().value
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val isUserListEmpty = uiState.userUiModelList.isEmpty()
     val isErrorOrEmpty = uiState.appError != null || uiState.userUiModelList.isEmpty()
 

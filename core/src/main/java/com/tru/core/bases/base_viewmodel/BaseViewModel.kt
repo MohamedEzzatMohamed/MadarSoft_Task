@@ -14,40 +14,96 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-abstract class BaseViewModel<Intent : ViewIntent, State : ViewState>(initialState: State) :
-    ViewModel(), AppErrorHandler {
+abstract class BaseViewModel<Intent : ViewIntent, State : ViewState, Event : UiEvent>(
+
+    initialState: State
+
+) : ViewModel(), AppErrorHandler {
 
 
-    private val _uiStateFlow = MutableStateFlow(initialState)
-    val uiStateFlow = _uiStateFlow.asStateFlow()
+
+// SINGLE source of truth
+
+    protected val _uiState = MutableStateFlow(initialState)
+
+    val uiState = _uiState.asStateFlow()
 
 
-    private val channel = Channel<Intent>(Channel.UNLIMITED)
+
+// UI events (navigation, snackbar, dialog...)
+
+    protected val _uiEvent = MutableSharedFlow<Event>()
+
+    val uiEvent = _uiEvent.asSharedFlow()
+
+
+
+// Intents stream
+
+    private val intents = MutableSharedFlow<Intent>(extraBufferCapacity = 1)
+
+
 
     init {
-        processIntent()
+
+        observeIntents()
+
     }
 
-    private fun processIntent() = viewModelScope.launch {
-        channel.consumeAsFlow().collect { intent -> processIntent(intent) }
+
+
+    private fun observeIntents() {
+
+        viewModelScope.launch {
+
+            intents.collect { intent ->
+
+                handleIntent(intent)
+
+            }
+
+        }
+
     }
 
-    abstract fun processIntent(intent: Intent)
 
 
-    protected fun updateStateFlow(reducer: State.() -> State) =
-        _uiStateFlow.update(reducer)
+    protected abstract suspend fun handleIntent(intent: Intent)
 
 
-    fun sendIntent(intent: Intent) = viewModelScope.launch { channel.send(intent) }
+
+    fun sendIntent(intent: Intent) {
+
+        intents.tryEmit(intent)
+
+    }
+
+
+
+    protected fun updateState(reducer: State.() -> State) {
+
+        _uiState.update(reducer)
+
+    }
+
 
 
     override fun handleError(error: AppError, callback: AppError.() -> Unit) {
+
         error.logError()
+
         callback(error)
+
     }
+
 }
+
+
 
 interface ViewState
 
+
+
 interface ViewIntent
+
+interface UiEvent
