@@ -11,9 +11,7 @@ import com.madarsofttask.feature.add_user_screen.domain.usecase.ValidateUserJobT
 import com.madarsofttask.feature.add_user_screen.domain.usecase.ValidateUserNameUseCase
 import com.tru.core.bases.base_viewmodel.BaseViewModel
 import com.tru.core.error.AppError
-import com.tru.core.extensions.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 @HiltViewModel
@@ -92,28 +90,25 @@ class AddUserViewModel @Inject constructor(
         updateState { copy(errorJobTitle = result.errorText) }
     }
 
-    // --- Repository Interaction ---
     private suspend fun executeAddUser(userEntity: UserEntity) {
-        // نستخدم الـ Dispatcher من خلال الـ scope الخارجي أو نحدده هنا إذا لزم الأمر
-        // الـ handleIntent تُنفذ أصلاً في viewModelScope
         updateState { copy(isLoading = true) }
 
         try {
             addUserRepository.addUser(user = userEntity.toUserDto())
-            updateState { copy(isLoading = false, isAddedSuccess = true) }
+            updateState { copy(isLoading = false) }
 
-            // إرسال Event للرجوع للخلف أو إظهار رسالة
             _uiEvent.emit(AddUserEvent.NavigateToList)
 
+            resetState()
         } catch (e: Exception) {
             val appError = AppError.E(exception = e, message = e.message ?: "Unknown error")
             handleError(error = appError) {
-                updateState { copy(isLoading = false, appError = appError) }
+                updateState { copy(isLoading = false) }
             }
         }
     }
 
-    fun resetState() {
+    private fun resetState() {
         updateState { AddUserState() }
     }
 }

@@ -43,6 +43,7 @@ class AllUsersListViewModel @Inject constructor(
             handleError(error = appError) {
                 updateState { copy(isLoading = false, appError = appError) }
             }
+            _uiEvent.emit(AllUsersEvent.ShowError(appError.message ?: ""))
         }
     }
 

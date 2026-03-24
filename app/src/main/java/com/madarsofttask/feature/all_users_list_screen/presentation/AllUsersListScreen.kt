@@ -1,8 +1,12 @@
 package com.madarsofttask.feature.all_users_list_screen.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -12,48 +16,64 @@ import com.tru.core.ui_component.main_top_bar.MainTopBar
 import com.tru.core.ui_component.ui_generic.GeneralLazyColumn
 import com.madarsofttask.R
 import com.madarsofttask.common.domain.entitty.UserEntity
+import com.madarsofttask.feature.all_users_list_screen.domain.event.AllUsersEvent
 import com.madarsofttask.feature.all_users_list_screen.presentation.composables.UserItem
 import com.madarsofttask.feature.all_users_list_screen.presentation.viewmodel.AllUsersListViewModel
+import com.madarsofttask.ui.theme.DarkBlue
+import com.tru.core.ui_component.loading.LoadingView
 
 @Composable
 fun AllUsersListScreen(
-    viewModel: AllUsersListViewModel = hiltViewModel(),
-    onBackClicked: () -> Unit
+    viewModel: AllUsersListViewModel = hiltViewModel(), onBackClicked: () -> Unit
 ) {
 
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    val isUserListEmpty = uiState.userUiModelList.isEmpty()
-    val isErrorOrEmpty = uiState.appError != null || uiState.userUiModelList.isEmpty()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-    val errorText = if (isUserListEmpty) {
-        stringResource(id = R.string.there_is_no_user_here)
-    } else {
-        stringResource(id = R.string.failed_to_load_content)
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AllUsersEvent.ShowError -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     MainTopBar(
         title = R.string.users,
-        isPullRefresh = false,
+        isRefreshing = uiState.isLoading,
         leftIcon = R.drawable.ic_vector_black_back_arrow,
         onLeftIconClicked = onBackClicked,
         content = {
             when {
-                isErrorOrEmpty -> FailureView(
-                    tapText = R.string.refresh,
-                    errText = errorText,
-                    icon = R.drawable.ic_vector_error,
-                    onTapToRefresh = viewModel::refresh
-                )
+                uiState.isLoading && uiState.userUiModelList.isEmpty() -> {
+                    LoadingView(color = DarkBlue)
+                }
+
+                uiState.appError != null -> {
+                    FailureView(
+                        tapText = R.string.refresh,
+                        errText = stringResource(id = R.string.failed_to_load_content),
+                        icon = R.drawable.ic_vector_error,
+                        onTapToRefresh = viewModel::refresh
+                    )
+                }
+
+                uiState.userUiModelList.isEmpty() -> {
+                    FailureView(
+                        tapText = R.string.addNewUser,
+                        errText = stringResource(id = R.string.there_is_no_user_here),
+                        image = R.drawable.ic_vector_empty_list,
+                        onTapToRefresh = onBackClicked
+                    )
+                }
 
                 else -> UsersListContent(
                     userUiModelList = uiState.userUiModelList,
                 )
             }
         })
-
-
-
-
 }
 
 @Composable
@@ -61,8 +81,7 @@ fun UsersListContent(
     userUiModelList: List<UserEntity>,
 ) {
     GeneralLazyColumn(
-        modifier = Modifier.padding(all = 8.dp),
-        list = userUiModelList
+        modifier = Modifier.padding(all = 8.dp), list = userUiModelList
     ) { user ->
         UserItem(
             name = user.name ?: "-",

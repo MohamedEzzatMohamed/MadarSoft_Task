@@ -1,5 +1,6 @@
 package com.madarsofttask.feature.add_user_screen.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tru.core.ui_component.custom_text_failed.ui_text.UiText
 import com.tru.core.ui_component.main_top_bar.MainTopBar
 import com.madarsofttask.R
+import com.madarsofttask.feature.add_user_screen.domain.event.AddUserEvent
 import com.madarsofttask.feature.add_user_screen.domain.event.state.AddUserState
 import com.madarsofttask.feature.add_user_screen.domain.model.Gender
 import com.madarsofttask.feature.add_user_screen.presentation.composables.NextButton
@@ -43,8 +47,21 @@ fun AddUserScreen(
     viewModel: AddUserViewModel = hiltViewModel(),
     onNavigateToAllUsers: () -> Unit,
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AddUserEvent.NavigateToList -> {
+                    onNavigateToAllUsers()
+                }
+                is AddUserEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     MainTopBar(
         title = R.string.addNewUser,
@@ -74,17 +91,7 @@ fun AddUserScreen(
                     }, onClick = onNavigateToAllUsers
                 )
             }
-
-
-
         })
-
-    LaunchedEffect(key1 = uiState) {
-        if (uiState.isAddedSuccess) {
-            onNavigateToAllUsers()
-            viewModel.resetState()
-        }
-    }
 
 }
 

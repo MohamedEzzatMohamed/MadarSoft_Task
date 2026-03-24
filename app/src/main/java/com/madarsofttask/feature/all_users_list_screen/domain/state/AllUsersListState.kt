@@ -8,5 +8,4 @@ data class AllUsersListState(
     val isLoading: Boolean = false,
     val appError: AppError? = null,
     val userUiModelList: List<UserEntity> = emptyList(),
-    val isUserDeleted: Boolean = false
 ) : ViewState
